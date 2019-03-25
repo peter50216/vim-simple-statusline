@@ -209,6 +209,9 @@ Neovim.plugin do |plug|
   plug.autocmd(:VimEnter) do |nvim|
     HIGHLIGHT_CMDS.each { |c| nvim.command(c) }
   end
+  plug.autocmd(:ColorScheme) do |nvim|
+    HIGHLIGHT_CMDS.each { |c| nvim.command(c) }
+  end
   plug.function(:SetHighlightGroups, nargs: 1, sync: true) do |nvim, active|
     set_highlight_groups(nvim, active)
   end
