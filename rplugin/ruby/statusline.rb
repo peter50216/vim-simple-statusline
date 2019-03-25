@@ -206,10 +206,7 @@ Neovim.plugin do |plug|
   plug.function(:BuildStatusLine, sync: true) do |nvim|
     build_status_line(nvim)
   end
-  plug.autocmd(:VimEnter) do |nvim|
-    HIGHLIGHT_CMDS.each { |c| nvim.command(c) }
-  end
-  plug.autocmd(:ColorScheme) do |nvim|
+  plug.autocmd('VimEnter,ColorScheme') do |nvim|
     HIGHLIGHT_CMDS.each { |c| nvim.command(c) }
   end
   plug.function(:SetHighlightGroups, nargs: 1, sync: true) do |nvim, active|
