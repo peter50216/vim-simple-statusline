@@ -203,16 +203,16 @@ def build_status_line(nvim)
 end
 
 Neovim.plugin do |plug|
-  plug.function(:BuildStatusLine, sync: true) do |nvim|
-    build_status_line(nvim)
-  end
-  plug.autocmd('VimEnter,ColorScheme') do |nvim|
-    HIGHLIGHT_CMDS.each { |c| nvim.command(c) }
-  end
-  plug.function(:SetHighlightGroups, nargs: 1, sync: true) do |nvim, active|
-    set_highlight_groups(nvim, active)
-  end
-  plug.function(:GetLintStatus, sync: true) do |nvim|
-    ItemLint.get_lint_status(nvim)
-  end
+  # plug.function(:BuildStatusLine, sync: true) do |nvim|
+  #   build_status_line(nvim)
+  # end
+  # plug.autocmd('VimEnter,ColorScheme') do |nvim|
+  #   HIGHLIGHT_CMDS.each { |c| nvim.command(c) }
+  # end
+  # plug.function(:SetHighlightGroups, nargs: 1, sync: true) do |nvim, active|
+  #   set_highlight_groups(nvim, active)
+  # end
+  # plug.function(:GetLintStatus, sync: true) do |nvim|
+  #   ItemLint.get_lint_status(nvim)
+  # end
 end
