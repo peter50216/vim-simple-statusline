@@ -1,10 +1,9 @@
 use fern::colors::{Color, ColoredLevelConfig};
-use futures::{future, Future};
-use log::{error, info};
-use rmp_rpc::{Client, Endpoint, Value};
-
-use vim_statusline::{
-    asyncio,
+use futures::future;
+use log::info;
+use rmp_rpc::{Client, Value};
+use vim_statusline::nvim::{
+    self,
     request_handler::{FunctionHandler, RequestFuture, RequestHandler},
 };
 
@@ -42,7 +41,6 @@ impl FunctionHandler for Test1 {
         true
     }
     fn handle(&mut self, client: &mut Client, args: &[Value]) -> RequestFuture {
-        // args.iter().map(|a| a.as_i64()).;
         Box::new(future::ok(
             format!("called withargument length = {}", args.len()).into(),
         ))
@@ -54,8 +52,6 @@ fn main() {
     info!("Started.");
     let mut client = RequestHandler::new();
     client.register_function(Box::new(Test1 {}));
-    let io = asyncio::stdio();
-    let endpoint = Endpoint::new(io, client).map_err(|e| error!("error: {}", e));
-    tokio::run(endpoint);
+    nvim::run(client);
     info!("Done.");
 }

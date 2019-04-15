@@ -7,15 +7,16 @@ let g:loaded_simple_statusline = 1
 highlight StatusLine cterm=none ctermbg=235 gui=none guibg=#222222
 highlight StatusLineNC cterm=none ctermbg=233 gui=none guibg=#111111
 
-if has('nvim')
-  function! s:RequireStatusLine(host) abort
-    let plugins = remote#host#PluginsForHost(a:host.name)
-    if len(plugins) == 0
-      throw 'vim-statusline not found'
-    endif
-    return provider#Poll(plugins[0].path, a:host.orig_name, '`TODO: error ENV`')
-  endfunction
-  call remote#host#Register('vim-statusline', 'vim-statusline', function('s:RequireStatusLine'))
+function! s:RequireStatusLine(host) abort
+  let plugins = remote#host#PluginsForHost(a:host.name)
+  if len(plugins) == 0
+    throw 'vim-statusline not found'
+  endif
+  return provider#Poll(plugins[0].path, a:host.orig_name, '`TODO: error ENV`')
+endfunction
+call remote#host#Register('vim-statusline', 'vim-statusline', function('s:RequireStatusLine'))
+
+if 0 " has('nvim')
 
   set laststatus=2
   " set statusline=%!BuildStatusLine()
