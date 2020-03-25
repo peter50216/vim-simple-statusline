@@ -1,6 +1,7 @@
 use fern::colors::{Color, ColoredLevelConfig};
-use futures::future;
+use futures::future::{self, Future};
 use log::info;
+use rmp::decode;
 use rmp_rpc::{Client, Value};
 use vim_statusline::nvim::{
     self,
@@ -32,18 +33,33 @@ fn setup_logger() -> Result<(), fern::InitError> {
     Ok(())
 }
 
-struct Test1 {}
-impl FunctionHandler for Test1 {
+fn unwrap_response(resp: rmp_rpc::Response) -> impl Future<Item = Value, Error = Value> {
+    resp.then(|r| match r {
+        Err(e) => future::err(format!("error while receiving response: {:?}", e).into()),
+        Ok(Err(e)) => future::err(format!("error response: {:?}", e).into()),
+        Ok(Ok(res)) => future::ok(res),
+    })
+}
+
+fn get_buf_number(buf: rmp_rpc::Value) -> u64 {
+    decode::read_int(&mut buf.as_ext().unwrap().1).unwrap()
+}
+
+struct BuildStatusLineFunc {}
+impl FunctionHandler for BuildStatusLineFunc {
     fn name(&self) -> &str {
-        "Test1"
+        "BuildStatusLine"
     }
     fn is_sync(&self) -> bool {
         true
     }
     fn handle(&mut self, client: &mut Client, args: &[Value]) -> RequestFuture {
-        Box::new(future::ok(
-            format!("called withargument length = {}", args.len()).into(),
-        ))
+        Box::new(
+            unwrap_response(client.request("nvim_get_current_buf", &[])).map(|buf| {
+                let active = get_buf_number(buf);
+                format!("%{{SetHighlightGroups({})}}", active).into()
+            }),
+        )
     }
 }
 
@@ -51,7 +67,7 @@ fn main() {
     setup_logger().unwrap();
     info!("Started.");
     let mut client = RequestHandler::new();
-    client.register_function(Box::new(Test1 {}));
+    client.register_function(Box::new(BuildStatusLineFunc {}));
     nvim::run(client);
     info!("Done.");
 }

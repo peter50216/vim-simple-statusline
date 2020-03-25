@@ -16,10 +16,11 @@ function! s:RequireStatusLine(host) abort
 endfunction
 call remote#host#Register('vim-statusline', 'vim-statusline', function('s:RequireStatusLine'))
 
-if 0 " has('nvim')
+" if has('nvim')
+if 0
 
   set laststatus=2
-  " set statusline=%!BuildStatusLine()
+  set statusline=%!BuildStatusLine()
 else
   " For vim backward-compatible, may not be up-to-date
   highlight Status1C ctermfg=blue ctermbg=235 guifg=#729FCF guibg=#222222
@@ -41,7 +42,7 @@ else
   highlight StatusErrorNC ctermfg=160 ctermbg=233 guifg=#D70000 guibg=#111111
 
   set laststatus=2
-  function! SetHighlight(nr)
+  function! SetHighlightGroups(nr)
     for i in [1,2,3,4,"Load","Warn","Error","Good"]
       if (winnr() == a:nr)
         exec 'highlight! link Status'.i.' Status'.i.'C'
@@ -91,9 +92,11 @@ else
   endfunction
   function! BuildStatusLine(nr)
     " TODO: make this looks better.
-    return '%{SetHighlight(' . a:nr . ')}' .
+    return '%{SetHighlightGroups(' . a:nr . ')}' .
           \ '%#StatusCheck# %{GetCheckStatus()} %* ' .
           \ '%=%<%#Status1#%F %#Status2#[%{&encoding}/%{&fileformat}/%Y]%#Status3# %l,%c %#Status4#%4P '
   endfunction
   set statusline=%!BuildStatusLine(winnr())
+  " set laststatus=2
+  " set statusline=%!BuildStatusLine()
 endif
