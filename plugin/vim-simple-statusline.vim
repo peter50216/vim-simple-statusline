@@ -55,26 +55,10 @@ else
   endfunction
   function! GetCheckStatus()
     let l:loading = 0
-    let l:error = 0
-    let l:warning = 0
-    if exists('*ale#engine#IsCheckingBuffer')
-      if ale#engine#IsCheckingBuffer(bufnr(''))
-        let l:loading = 1
-      else
-        let l:counts = ale#statusline#Count(bufnr(''))
-        let l:error = l:error + l:counts.error + l:counts.style_error
-        let l:warning = l:warning + l:counts.warning + l:counts.style_warning
-      endif
-    endif
-    if exists('*youcompleteme#GetErrorCount')
-      let l:error = l:error + youcompleteme#GetErrorCount()
-      let l:warning = l:warning + youcompleteme#GetWarningCount()
-    endif
-    let info = get(b:, 'coc_diagnostic_info', {})
-    if !empty(info)
-      let l:error = l:error + get(info, 'error', 0)
-      let l:warning = l:warning + get(info, 'warning', 0)
-    endif
+    " let l:error = 0
+    " let l:warning = 0
+    let l:warning = luaeval('#vim.diagnostic.get(0, { severity = { vim.diagnostic.severity.WARN }})')
+    let l:error = luaeval('#vim.diagnostic.get(0, { severity = { vim.diagnostic.severity.ERROR }})')
     if l:loading > 0
       let l:color = 'Load'
       let l:status = '.'
