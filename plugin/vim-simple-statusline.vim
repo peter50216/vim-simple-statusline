@@ -33,7 +33,7 @@ function! s:SetColors() abort
 endfunction
 
 " To avoid status line blinking before the plugin is loaded.
-autocmd ColorScheme * s:SetColors()
+autocmd ColorScheme * call s:SetColors()
 call s:SetColors()
 " call remote#host#Register('vim-statusline', 'vim-statusline', function('s:RequireStatusLine'))
 
